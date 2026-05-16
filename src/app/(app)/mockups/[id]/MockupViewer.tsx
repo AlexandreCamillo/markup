@@ -324,9 +324,11 @@ export function MockupViewer({
           versionLabel={versionLabel}
           mode={toolbarMode}
           onModeChange={setToolbarMode}
-          onZoomChange={(d) => {
-            // T19 will implement actual zoom; for now just log
-            console.log('zoom', d);
+          onZoomChange={(delta) => {
+            setToolbarZoom((z) => {
+              if (delta === 'reset') return 100;
+              return Math.min(400, Math.max(25, z + delta));
+            });
           }}
           onFullscreen={() => console.log('fullscreen (T20)')}
           onHistory={() => console.log('history (T20)')}
@@ -443,39 +445,52 @@ export function MockupViewer({
             style={{
               position: 'relative',
               background: 'var(--bg-iframe)',
+              overflow: 'auto',
             }}
           >
-            <iframe
-              ref={iframeRef}
-              title={mockupName}
-              src={`/m/${mockupId}/index.html?v=${currentVersionId}`}
-              sandbox="allow-scripts allow-same-origin"
+            {/* Scaling wrapper — transform: scale() is applied here so pointer events
+                remain correct inside the iframe (scaling the iframe itself breaks them) */}
+            <div
               style={{
-                width: '100%',
-                height: '100%',
-                border: 0,
-                background: 'var(--bg-iframe-white)',
+                transform: `scale(${toolbarZoom / 100})`,
+                transformOrigin: 'top left',
+                width: `${(100 * 100) / toolbarZoom}%`,
+                height: `${(100 * 100) / toolbarZoom}%`,
+                position: 'relative',
               }}
-            />
-            {/* Pin overlay */}
-            <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
-              {annotations.map((a, i) => {
-                const pin = parsePinCoords(a.pinCoords);
-                if (!pin) return null;
-                const pos = computePinScreenPosition(pin, iframeScroll);
-                if (!pos.visible) return null;
-                return (
-                  <div key={a.id} className="pin-wrapper" style={{ pointerEvents: 'auto' }}>
-                    <AnnotationPin
-                      index={i + 1}
-                      annotationId={a.id}
-                      x={pos.x}
-                      y={pos.y}
-                      status={a.threadStatus}
-                    />
-                  </div>
-                );
-              })}
+            >
+              <iframe
+                ref={iframeRef}
+                title={mockupName}
+                src={`/m/${mockupId}/index.html?v=${currentVersionId}`}
+                sandbox="allow-scripts allow-same-origin"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  border: 0,
+                  background: 'var(--bg-iframe-white)',
+                }}
+              />
+              {/* Pin overlay */}
+              <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+                {annotations.map((a, i) => {
+                  const pin = parsePinCoords(a.pinCoords);
+                  if (!pin) return null;
+                  const pos = computePinScreenPosition(pin, iframeScroll);
+                  if (!pos.visible) return null;
+                  return (
+                    <div key={a.id} className="pin-wrapper" style={{ pointerEvents: 'auto' }}>
+                      <AnnotationPin
+                        index={i + 1}
+                        annotationId={a.id}
+                        x={pos.x}
+                        y={pos.y}
+                        status={a.threadStatus}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </main>
         </div>
