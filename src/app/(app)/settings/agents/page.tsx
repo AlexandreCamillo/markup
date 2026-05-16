@@ -22,12 +22,21 @@ export default async function AgentsPage() {
   const id = await identify(fakeReq);
   if (!id || id.kind !== 'user') redirect('/login');
   const tokens = await prisma.agentToken.findMany({
-    select: { id: true, name: true, createdAt: true, lastUsedAt: true },
+    select: {
+      id: true,
+      name: true,
+      prefix: true,
+      lastFour: true,
+      createdAt: true,
+      lastUsedAt: true,
+    },
     orderBy: { createdAt: 'desc' },
   });
   const initial = tokens.map((t) => ({
     id: t.id,
     name: t.name,
+    prefix: t.prefix,
+    lastFour: t.lastFour,
     createdAt: t.createdAt.toISOString(),
     lastUsedAt: t.lastUsedAt ? t.lastUsedAt.toISOString() : null,
   }));
@@ -43,7 +52,7 @@ export default async function AgentsPage() {
         userName={user?.name ?? undefined}
         userEmail={user?.email ?? undefined}
       />
-      <AgentsClient initial={initial} />
+      <AgentsClient initialTokens={initial} />
     </>
   );
 }
