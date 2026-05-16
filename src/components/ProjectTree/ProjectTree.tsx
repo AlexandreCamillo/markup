@@ -443,6 +443,7 @@ export function ProjectTree({
   const menuRef = useRef<HTMLDivElement>(null);
   const treeRef = useRef<HTMLDivElement>(null);
   const announceRef = useRef<HTMLDivElement>(null);
+  const activeRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!menuOpenId) return;
@@ -690,6 +691,13 @@ export function ProjectTree({
     });
   }, [pathname, projects, searchParams]);
 
+  useEffect(() => {
+    const el = activeRef.current;
+    if (el && typeof el.scrollIntoView === 'function') {
+      el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+  }, [pathname, searchParams]);
+
   const isActive = (href: string) => {
     if (href.startsWith('/?')) {
       const params = new URLSearchParams(href.slice(2));
@@ -780,6 +788,7 @@ export function ProjectTree({
               )}
               {/* biome-ignore lint/a11y/useKeyWithClickEvents: keyboard handled by parent tree onKeyDown */}
               <div
+                ref={active ? activeRef : undefined}
                 role="treeitem"
                 tabIndex={index === focusIndex ? 0 : -1}
                 data-tree-index={index}
