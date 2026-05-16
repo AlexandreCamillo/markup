@@ -14,6 +14,8 @@ const cx = (...classes: (string | false | undefined | null)[]) => classes.filter
 
 const INDENT_PX = [0, 12, 28, 44, 60];
 
+const EXPANDED_STORAGE_KEY = 'markup.sidebar.expanded';
+
 /* ── Types ────────────────────────────────────────────────────────────────── */
 
 export interface TreeMockup {
@@ -413,9 +415,22 @@ export function ProjectTree({
   const router = useRouter();
 
   const [expanded, setExpanded] = useState<Set<string>>(() => {
-    const initial = computeActivePathExpanded(projects, pathname, searchParams);
-    if (initial.size === 0 && projects.length > 0) initial.add(projects[0].id);
-    return initial;
+    const fromUrl = computeActivePathExpanded(projects, pathname, searchParams);
+    if (typeof window === 'undefined') {
+      if (fromUrl.size === 0 && projects.length > 0) fromUrl.add(projects[0].id);
+      return fromUrl;
+    }
+    try {
+      const stored: string[] = JSON.parse(
+        localStorage.getItem(EXPANDED_STORAGE_KEY) ?? '[]',
+      );
+      const merged = new Set([...stored, ...fromUrl]);
+      if (merged.size === 0 && projects.length > 0) merged.add(projects[0].id);
+      return merged;
+    } catch {
+      if (fromUrl.size === 0 && projects.length > 0) fromUrl.add(projects[0].id);
+      return fromUrl;
+    }
   });
   const [focusIndex, setFocusIndex] = useState(0);
   const [creatingIn, setCreatingIn] = useState<{
@@ -439,6 +454,15 @@ export function ProjectTree({
     document.addEventListener('mousedown', handle);
     return () => document.removeEventListener('mousedown', handle);
   }, [menuOpenId]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      localStorage.setItem(EXPANDED_STORAGE_KEY, JSON.stringify([...expanded]));
+    } catch {
+      // Storage full or disabled — silently no-op; in-memory state still works.
+    }
+  }, [expanded]);
 
   const nodes = flattenProjects(projects, expanded, recents);
 
