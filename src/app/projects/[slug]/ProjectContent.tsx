@@ -4,6 +4,7 @@ import MockupCard from '@/app/mockups/MockupCard';
 import type { BreadcrumbSegment } from '@/components/Breadcrumbs/Breadcrumbs';
 import { EmptyState } from '@/components/EmptyState/EmptyState';
 import { FolderCard } from '@/components/FolderCard/FolderCard';
+import { FolderHeader } from '@/components/FolderHeader/FolderHeader';
 import { Topbar } from '@/components/Topbar/Topbar';
 
 interface FolderSummary {
@@ -24,6 +25,9 @@ interface MockupSummary {
 interface ProjectContentProps {
   projectName: string;
   projectSlug: string;
+  projectIcon?: string | null;
+  /** When viewing a sub-folder, the folder name to show in the header. */
+  folderName?: string | null;
   folders: FolderSummary[];
   mockups: MockupSummary[];
   breadcrumbs: BreadcrumbSegment[];
@@ -32,6 +36,9 @@ interface ProjectContentProps {
 }
 
 export function ProjectContent({
+  projectName,
+  projectIcon,
+  folderName,
   projectSlug,
   folders,
   mockups,
@@ -54,6 +61,11 @@ export function ProjectContent({
           scrollbarColor: 'var(--border) transparent',
         }}
       >
+        <FolderHeader
+          icon={projectIcon ?? null}
+          name={folderName ?? projectName}
+          count={folders.length + mockups.length}
+        />
         {isEmpty ? (
           <EmptyState variant="project" />
         ) : (

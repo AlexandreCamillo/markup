@@ -73,6 +73,8 @@ export default async function Root({ searchParams }: Props) {
       <ProjectContent
         projectName={projectDisplayName(selectedProject)}
         projectSlug={selectedProject.slug}
+        projectIcon={selectedProject.icon ?? null}
+        folderName={folder.name}
         folders={folder.children.map((f) => ({
           id: f.id,
           name: f.name,
@@ -121,6 +123,7 @@ export default async function Root({ searchParams }: Props) {
     <ProjectContent
       projectName={projectDisplayName(project)}
       projectSlug={project.slug}
+      projectIcon={project.icon ?? null}
       folders={project.folders.map((f) => ({
         id: f.id,
         name: f.name,
