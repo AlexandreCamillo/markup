@@ -131,7 +131,7 @@ Structural breadcrumb navigation (`Breadcrumbs.tsx`). No "Markup" or "Home" pref
 | `breadcrumbs-nav` | `<nav aria-label="Navegação estrutural">` with `<ol>` breadcrumb trail. Visible inside projects; hidden at app root | visible, hidden |
 | `breadcrumbs-segment` | Clickable ancestor segment (text-dim, hover → text) | default, hover, focus-visible; navigates to that level |
 | `breadcrumbs-current` | Final segment (non-clickable) | `aria-current="page"`, `--text-bright`, `--weight-semibold` |
-| `breadcrumbs-separator` | `/` separator between segments | `--text-muted`, 11 px, flex-shrink 0 |
+| `breadcrumbs-separator` | `›` chevron separator between segments | `--text-muted`, 11 px, flex-shrink 0, aria-hidden on separator span |
 | `breadcrumbs-ellipsis` | Truncation `...` for long paths. First segment (project) and last (current) never truncated. Minimum: `Project / ... / Current` | clickable: expands full breadcrumb inline |
 | `breadcrumbs-keyboard` | Tab into nav, ArrowLeft/Right between segments | Enter navigates |
 | `breadcrumbs-mobile` | Aggressive truncation on < 768 px | shows current + `...` link to parent; tap expands as dropdown |
