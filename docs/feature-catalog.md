@@ -2,6 +2,10 @@
 
 Exhaustive inventory of every user-visible interaction, state, animation, and surface in Markup. **This is the single source of truth that visual-QA, visual-refine, and any UI-touching task tests against.** Every entry has a stable kebab-case ID so issues, screenshots, and reports can reference it durably.
 
+> **In-flight:** This document is being updated as part of `fix/qa-findings-2026-05-16` to reflect:
+> separator chevron (`›`), sidebar section headers, folder view header + toolbar,
+> agent tokens cards, mockup viewer toolbar.
+
 ---
 
 ## How to use this catalog
