@@ -102,9 +102,12 @@ export function AgentsClient({
     setTimeout(() => setCopied(false), 1200);
   }
 
-  // no-op: T17 will wire actual clipboard copy for masked preview
-  function handleCopyToken(_id: string) {
-    // T17: copy token masked preview / plaintext if recently created
+  async function copyToken(masked: string) {
+    try {
+      await navigator.clipboard.writeText(masked);
+    } catch {
+      // clipboard unavailable / denied — silently no-op for now.
+    }
   }
 
   return (
@@ -395,7 +398,7 @@ export function AgentsClient({
                     type="button"
                     aria-label={`Copy token ${t.name}`}
                     title="Copy"
-                    onClick={() => handleCopyToken(t.id)}
+                    onClick={() => copyToken(maskedPreview(t.prefix, t.lastFour))}
                   >
                     📋
                   </button>
