@@ -381,6 +381,7 @@ function flattenChildren(
 
 interface ProjectTreeProps {
   projects: TreeProject[];
+  orphanMockups?: TreeMockup[];
   recents?: Record<string, string[]>;
   mockupNames?: Record<string, string>;
   onCreateFolder?: (projectId: string, parentId: string | null, name: string) => Promise<void>;
@@ -398,6 +399,7 @@ interface ProjectTreeProps {
 
 export function ProjectTree({
   projects,
+  orphanMockups = [],
   recents = {},
   mockupNames = {},
   onCreateFolder,
@@ -689,6 +691,7 @@ export function ProjectTree({
         onKeyDown={handleKeyDown}
         className={styles.tree}
       >
+        <div className={styles.sectionHeader} aria-hidden="true">PROJECTS</div>
         {nodes.map((node, index) => {
           if (node.type === 'recents-header') {
             return (
@@ -1001,6 +1004,28 @@ export function ProjectTree({
             </li>
           );
         })}
+        {orphanMockups.length > 0 && (
+          <>
+            <div className={styles.sectionHeader} aria-hidden="true">NO PROJECT</div>
+            {orphanMockups.map((m) => (
+              <li key={m.id} role="none" className={styles.item}>
+                <div
+                  role="treeitem"
+                  aria-level={1}
+                  aria-selected={false}
+                  className={cx(styles.treeItem, styles.indent1)}
+                  tabIndex={-1}
+                  onClick={() => {}}
+                >
+                  <span className={styles.iconMockup}>
+                    <MockupIcon />
+                  </span>
+                  <span className={styles.label}>{m.name}</span>
+                </div>
+              </li>
+            ))}
+          </>
+        )}
       </div>
     </>
   );
